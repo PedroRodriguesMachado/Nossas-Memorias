@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minha Parede</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- BAR -->
+<div class="bar">
+  <div class="bar-logo"><span class="bar-dot"></span>Minha Parede</div>
+  <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">+ Foto</button>
+  <button class="btn btn-outline" onclick="openNote()">+ Post-it</button>
+  <button class="btn btn-outline" id="btnTheme" onclick="toggleTheme()">Temas</button>
+  <button class="btn btn-green" id="btnSb" onclick="openSb()">Supabase</button>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" multiple>
+
+<!-- WALL -->
+<div class="wall" id="wall">
+  <div class="empty" id="empty">
+    <div style="font-size:40px;opacity:.4">◻</div>
+    <p>Adicione fotos ou post-its para começar</p>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
+
+<!-- BAR -->
+<div class="bar">
+  <div class="bar-logo"><span class="bar-dot"></span>Minha Parede</div>
+  <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">+ Foto</button>
+  <button class="btn btn-outline" onclick="openNote()">+ Post-it</button>
+  <button class="btn btn-outline" id="btnTheme" onclick="toggleTheme()">Temas</button>
+  <button class="btn btn-green" id="btnSb" onclick="openSb()">Supabase</button>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" multiple>
+
+<!-- WALL -->
+<div class="wall" id="wall">
+  <div class="empty" id="empty">
+    <div style="font-size:40px;opacity:.4">◻</div>
+    <p>Adicione fotos ou post-its para começar</p>
+  </div>
+</div>
+
+<!-- THEME PANEL -->
+<aside class="theme-panel" id="themePanel">
+  <div class="tp-head">
+    <h3>Editor de Tema</h3>
+    <button class="tp-close" onclick="toggleTheme()">×</button>
+  </div>
+  <div class="tp-body">
+    <div class="preset-label">Presets</div>
+    <div class="preset-grid" id="presetGrid"></div>
+
+    <div class="sec-label">Parede</div>
+    <div class="var-row"><label>Fundo</label><input type="color" data-var="--wall-bg" oninput="av(this)"></div>
+    <div class="divider"></div>
+
+    <div class="sec-label">Barra</div>
+    <div class="var-row"><label>Fundo</label><input type="color" data-var="--bar-bg" oninput="av(this)"></div>
+    <div class="var-row"><label>Borda</label><input type="color" data-var="--bar-border" oninput="av(this)"></div>
+    <div class="var-row"><label>Texto</label><input type="color" data-var="--bar-text" oninput="av(this)"></div>
+    <div class="divider"></div>
+
+    <div class="sec-label">Botões</div>
+    <div class="var-row"><label>Fundo</label><input type="color" data-var="--btn-bg" oninput="av(this)"></div>
+    <div class="var-row"><label>Texto</label><input type="color" data-var="--btn-text" oninput="av(this)"></div>
+    <div class="var-row"><label>Radius</label><input type="text" data-var="--btn-radius" oninput="avt(this)" placeholder="6px"></div>
+    <div class="divider"></div>
+
+    <div class="sec-label">Polaroid</div>
+    <div class="var-row"><label>Fundo</label><input type="color" data-var="--polaroid-bg" oninput="av(this)"></div>
+    <div class="var-row"><label>Legenda</label><input type="color" data-var="--polaroid-caption-color" oninput="av(this)"></div>
+    <div class="divider"></div>
+
+    <div class="sec-label">Post-its & Pinos</div>
+    <div class="var-row"><label>Texto</label><input type="color" data-var="--note-text" oninput="av(this)"></div>
+    <div class="var-row"><label>Cor do pino</label><input type="color" data-var="--pin-color" oninput="av(this)"></div>
+    <div class="divider"></div>
+
+    <div class="sec-label">Acento</div>
+    <div class="var-row"><label>Cor de acento</label><input type="color" data-var="--accent" oninput="av(this)"></div>
+
+    <div class="css-label">CSS gerado</div>
+    <pre class="css-box" id="cssBox"></pre>
+  </div>
+  <div class="tp-foot">
+    <button class="btn btn-outline" onclick="copyCss()">Copiar CSS</button>
+    <button class="btn" onclick="saveTheme()">Salvar</button>
+  </div>
+</aside>
+
+<!-- SUPABASE MODAL -->
+<div class="overlay" id="sbOverlay">
+  <div class="modal">
+    <h2>Configurar Supabase</h2>
+    <p class="sub">Salve na nuvem. Execute antes no SQL Editor:</p>
+    <div class="sql-block">CREATE TABLE wall_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  type TEXT, x FLOAT, y FLOAT, rotation FLOAT,
+  image_url TEXT, caption TEXT,
+  note_text TEXT, color TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+-- Storage > New bucket: wall-photos (público)</div>
+    <div class="field"><label>URL do Projeto</label><input type="text" id="sbUrl" placeholder="https://xxxx.supabase.co"></div>
+    <div class="field"><label>Chave Anon</label><input type="text" id="sbKey" placeholder="eyJ..."></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeSb()">Cancelar</button>
+      <button class="btn btn-green" onclick="saveSb()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE EDITOR -->
+<div class="note-overlay" id="noteOverlay">
+  <div class="note-editor" id="noteBox" style="background:#fef08a">
+    <textarea id="noteText" placeholder="Escreva aqui..."></textarea>
+    <div class="nc-row" id="ncRow"></div>
+    <div class="note-foot">
+      <button class="n-cancel" onclick="closeNote()">Cancelar</button>
+      <button class="n-add" onclick="addNote()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</body>
+</html>
