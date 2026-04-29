@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minha Parede</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+
+<style id="themeStyle">
+:root {
+  --wall-bg:#f0ece4;
+  --wall-texture:rgba(0,0,0,0.03);
+  --bar-bg:#ffffff;
+  --bar-border:#e5e2dc;
+  --bar-text:#1a1a1a;
+  --btn-bg:#1a1a1a;
+  --btn-text:#ffffff;
+  --btn-radius:6px;
+  --polaroid-bg:#ffffff;
+  --polaroid-shadow:0 4px 20px rgba(0,0,0,0.12);
+  --polaroid-caption-color:#555555;
+  --note-text:#1a1a1a;
+  --pin-color:#1a1a1a;
+  --accent:#1a1a1a;
+  --font-ui:'DM Sans', sans-serif;
+  --font-hw:'Caveat', cursive;
+}
+</style>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-ui);background:var(--wall-bg)}
+
+.bar{position:fixed;top:0;width:100%;height:54px;background:var(--bar-bg);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid var(--bar-border)}
+.btn{padding:6px 12px;border:none;background:var(--btn-bg);color:var(--btn-text);border-radius:var(--btn-radius);cursor:pointer}
+
+.wall{margin-top:54px;padding:40px;min-height:100vh;background:var(--wall-bg)}
+
+.polaroid{position:absolute;cursor:grab}
+.polaroid-inner{background:var(--polaroid-bg);padding:10px 10px 40px}
+.polaroid-img{width:180px;height:180px;object-fit:cover}
+.polaroid-caption{font-family:var(--font-hw);text-align:center}
+
+.postit{position:absolute;padding:20px;background:#fef08a}
+.postit-text{font-family:var(--font-hw)}
+</style>
+</head>
+
+<body>
+
+<div class="bar">
+  <button class="btn" onclick="addNote()">+ Post-it</button>
+</div>
+
+<div class="wall" id="wall"></div>
+
+<script>
+/* ===== ESTADO ===== */
+let items=[]
+let curVars={}
+
+/* ===== TEMA ===== */
+function initTheme(){
+  const defaults=getComputedStyle(document.documentElement)
+  document.querySelectorAll(':root')[0]
+  curVars={
+    '--wall-bg':defaults.getPropertyValue('--wall-bg').trim(),
+    '--bar-bg':defaults.getPropertyValue('--bar-bg').trim(),
+    '--btn-radius':defaults.getPropertyValue('--btn-radius').trim()
+  }
+}
+
+/* valida unidade */
+function avt(input){
+  let v=input.value.trim()
+  if(!v.endsWith('px')) v+='px'
+  document.documentElement.style.setProperty(input.dataset.var,v)
+  curVars[input.dataset.var]=v
+}
+
+/* ===== RENDER ===== */
+function render(){
+  const wall=document.getElementById('wall')
+  wall.innerHTML=''
+  items.forEach(i=>{
+    if(i.type==='note'){
+      const el=document.createElement('div')
+      el.className='postit'
+      el.style.left=i.x+'px'
+      el.style.top=i.y+'px'
+      el.innerHTML='<div class="postit-text">'+i.text+'</div>'
+      wall.appendChild(el)
+    }
+  })
+}
+
+/* ===== ADD NOTE ===== */
+function addNote(){
+  const item={
+    id:Date.now(),
+    type:'note',
+    text:'Novo post-it',
+    x:100+Math.random()*200,
+    y:100+Math.random()*200
+  }
+  items.push(item)
+  render()
+}
+
+/* ===== INIT ===== */
+function init(){
+  initTheme()
+  render()
+}
+init()
+</script>
+
+</body>
+</html>
